@@ -2,20 +2,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CameraFollow : MonoBehaviour
+
+namespace RPG.Core
 {
-    public Transform target;
 
-    private Vector3 positionDifference;
-    // Start is called before the first frame update
-    void Start()
+    public class CameraFollow : MonoBehaviour
     {
-        var diferpositionDifferenceence = target.position - transform.position;
-    }
+        public Transform target;
 
-    // Update is called once per frame
-    void LateUpdate()
-    {
-        transform.position = target.position + positionDifference;
+        private Vector3 positionDifference;
+        // Start is called before the first frame update
+        void Start()
+        {
+            var diferpositionDifferenceence = target.position - transform.position;
+        }
+
+        // Update is called once per frame
+        void LateUpdate()
+        {
+            transform.position = target.position + positionDifference;
+        }
     }
 }

@@ -3,53 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Mover : MonoBehaviour
+namespace RPG.Movement
 {
-    [SerializeField]
-    public Transform target;
-
-    Ray lastRay;
-    private NavMeshAgent navMesh;
-
- 
-
-    void Start()
+    public class Mover : MonoBehaviour
     {
-        navMesh = GetComponent<NavMeshAgent>();
-    }
+        [SerializeField]
+        public Transform target;
 
-    void Update()
-    {
-        if (Input.GetMouseButton(0))
+        Ray lastRay;
+
+        void Update()
         {
-            MoveToCursor(Input.mousePosition);
+            UpdateAnimator();
+        }
+
+        public void MoveTo(Vector3 destination)
+        {
+            GetComponent<NavMeshAgent>().destination = destination;
+        }
+
+        private void UpdateAnimator()
+        {
+            //! Parse navmesh velocity to animator blend tree to adjust animation speed of player
+            Vector3 velocity = GetComponent<NavMeshAgent>().velocity;
+            Vector3 localVelocity = transform.InverseTransformDirection(velocity); //change global velocity to local
+            float speed = localVelocity.z;
+            GetComponent<Animator>().SetFloat("forwardSpeed", speed); //change parameter in animator parameters to change animation in blend tree
 
         }
 
-        UpdateAnimator();
-        
     }
-
-    void MoveToCursor(Vector3 targetPosition)
-    {
-        Ray ray = Camera.main.ScreenPointToRay(targetPosition);
-        RaycastHit hit;
-        bool hasHit = Physics.Raycast(ray, out hit);
-        if (hasHit)
-        {
-            navMesh.destination = hit.point;
-        }
-
-    }
-
-    private void UpdateAnimator()
-    {
-        //! Parse navmesh velocity to animator blend tree to adjust animation speed of player
-        Vector3 velocity = navMesh.velocity;
-        Vector3 localVelocity = transform.InverseTransformDirection(velocity); //change global velocity to local
-        float speed = localVelocity.z;
-        GetComponent<Animator>().SetFloat("forwardSpeed", speed); //change parameter in animator parameters to change animation in blend tree
-
-    }
-
 }

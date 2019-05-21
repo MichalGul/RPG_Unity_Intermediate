@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using RPG.Movement;
-
+using RPG.Combat;
+using System;
 
 namespace RPG.Control
 {
@@ -10,36 +11,59 @@ namespace RPG.Control
     public class PlayerController : MonoBehaviour
     {
 
-        void MoveToCursor(Vector3 targetPosition)
-        {
-            Ray ray = Camera.main.ScreenPointToRay(targetPosition);
-            RaycastHit hit;
-            bool hasHit = Physics.Raycast(ray, out hit);
-            if (hasHit)
-            {
-                //! Call mover function to move player
-                GetComponent<Mover>().MoveTo(hit.point);
-            }
-
-        }
-
-        // Start is called before the first frame update
-        void Start()
-        {
-
-        }
 
         // Update is called once per frame
         void Update()
         {
-            if (Input.GetMouseButton(0))
-            {
-                MoveToCursor(Input.mousePosition);
+            if (InteractWithCombat()) return;
+            if(InteractWithMovement()) return;
+            Debug.Log("Nothind to do.");
+        }
 
+        private bool InteractWithCombat()
+        {
+            //Check for all items that raycast hit
+            RaycastHit[] hits = Physics.RaycastAll(GetMouseRay());
+            foreach (RaycastHit hit in hits)
+            {
+                CombatTarget target = hit.transform.GetComponent<CombatTarget>();
+                if (target == null) continue;
+                
+                if(Input.GetMouseButtonDown(0))
+                {
+                    GetComponent<Fighter>().Attack(target);
+                }
+
+                return true;
             }
+
+            return false;
+
+;        }
+
+        private bool InteractWithMovement()
+        {
+            RaycastHit hit;
+            bool hasHit = Physics.Raycast(GetMouseRay(), out hit);
+            if (hasHit)
+            {
+                if (Input.GetMouseButton(0))
+                {
+                    GetComponent<Mover>().StartMoveAction(hit.point);
+
+                }
+                //! Call mover function to move player
+                return true;
+            }
+
+            return false;
+        }
+
+        private static Ray GetMouseRay()
+        {
+            return Camera.main.ScreenPointToRay(Input.mousePosition);
         }
     }
-
 }
 
 

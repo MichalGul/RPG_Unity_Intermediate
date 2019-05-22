@@ -11,11 +11,16 @@ namespace RPG.Combat
     {
         [SerializeField]
         float weaponRange = 2f;
+        [SerializeField]
+        float timeBetweenAttack = 1f;
 
         Transform target;
+        float timeSinceLastAttack = 0;
 
         private void Update()
         {
+            timeSinceLastAttack += Time.deltaTime;
+
             if (target == null) return;
 
             //Move towards the target
@@ -33,8 +38,12 @@ namespace RPG.Combat
 
         private void AttackBehaviour()
         {
-            //Run attack animation
-            GetComponent<Animator>().SetTrigger("attack");
+            if (timeSinceLastAttack > timeBetweenAttack)
+            {
+                //Run attack animation
+                GetComponent<Animator>().SetTrigger("attack");
+                timeSinceLastAttack = 0;
+            }
         }
 
         private bool GetIsInRange()

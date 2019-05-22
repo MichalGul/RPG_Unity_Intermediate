@@ -9,12 +9,10 @@ namespace RPG.Combat
 
     public class Fighter : MonoBehaviour, IAction
     {
-
         [SerializeField]
         float weaponRange = 2f;
 
         Transform target;
-
 
         private void Update()
         {
@@ -28,8 +26,15 @@ namespace RPG.Combat
             else
             {
                 GetComponent<Mover>().Cancel();
+                AttackBehaviour();
             }
 
+        }
+
+        private void AttackBehaviour()
+        {
+            //Run attack animation
+            GetComponent<Animator>().SetTrigger("attack");
         }
 
         private bool GetIsInRange()
@@ -41,13 +46,19 @@ namespace RPG.Combat
         {
             GetComponent<ActionScheduler>().StartAction(this);
             target = combatTarget.transform;
-
             Debug.Log("Take that you pesant!");
         }
 
         public void Cancel()
         {
             target = null;
+        }
+
+
+        //Animation Event, called from animation event in animation
+        void Hit()
+        {
+
         }
 
     }

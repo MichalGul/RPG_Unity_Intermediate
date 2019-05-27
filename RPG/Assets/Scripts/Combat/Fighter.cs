@@ -9,12 +9,11 @@ namespace RPG.Combat
 
     public class Fighter : MonoBehaviour, IAction
     {
-        [SerializeField]
-        float weaponRange = 2f;
-        [SerializeField]
-        float timeBetweenAttack = 1f;
+        [SerializeField] float weaponRange = 2f;
+        [SerializeField] float timeBetweenAttack = 1f;
+        [SerializeField] float weaponDamage = 10f;
 
-        Transform target;
+        Health target;
         float timeSinceLastAttack = 0;
 
         private void Update()
@@ -23,10 +22,12 @@ namespace RPG.Combat
 
             if (target == null) return;
 
+            if (target.IsDead()) return;
+
             //Move towards the target
             if (target != null && !GetIsInRange())
             {
-                GetComponent<Mover>().MoveTo(target.position);
+                GetComponent<Mover>().MoveTo(target.transform.position);
             }
             else
             {
@@ -41,33 +42,34 @@ namespace RPG.Combat
             if (timeSinceLastAttack > timeBetweenAttack)
             {
                 //Run attack animation
+                //This will triger the Hit() event
                 GetComponent<Animator>().SetTrigger("attack");
                 timeSinceLastAttack = 0;
             }
         }
+        //Animation Event, called from animation event in animation
+        void Hit()
+        {
+            target.TakeDamage(weaponDamage);
+        }
 
         private bool GetIsInRange()
         {
-            return Vector3.Distance(transform.position, target.position) < weaponRange;
+            return Vector3.Distance(transform.position, target.transform.position) < weaponRange;
         }
 
         public void Attack(CombatTarget combatTarget)
         {
             GetComponent<ActionScheduler>().StartAction(this);
-            target = combatTarget.transform;
+            target = combatTarget.GetComponent<Health>();
+ 
             Debug.Log("Take that you pesant!");
         }
 
         public void Cancel()
         {
+            GetComponent<Animator>().SetTrigger("stopAttack");
             target = null;
-        }
-
-
-        //Animation Event, called from animation event in animation
-        void Hit()
-        {
-
         }
 
     }

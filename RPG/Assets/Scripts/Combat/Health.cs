@@ -19,8 +19,7 @@ namespace RPG.Combat
             healthPoints = Mathf.Max(healthPoints - damage, 0);
             Debug.Log(healthPoints);
             if (healthPoints == 0)
-            {
-                
+            {               
                 TriggerDeath();
             }
 

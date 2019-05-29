@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using RPG.Movement;
 using RPG.Combat;
+using RPG.Core;
 using System;
 
 namespace RPG.Control
@@ -10,11 +11,18 @@ namespace RPG.Control
 
     public class PlayerController : MonoBehaviour
     {
+        Health playerHealth;
 
 
+        private void Start()
+        {
+            playerHealth = GetComponent<Health>();
+        }
         // Update is called once per frame
         void Update()
         {
+            if (playerHealth.IsDead()) return;
+
             if (InteractWithCombat()) return;
             if(InteractWithMovement()) return;
             Debug.Log("Nothind to do.");
